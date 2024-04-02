@@ -85,6 +85,10 @@ def get_next_token(lines,tokens):
 
             match=is_punctuation(line)
             if match:
+                token=None
+                # if match.group()==";" or match.group()==",":
+                #     token = Token("OPERATOR", match.group(),index)
+                # else:
                 token = Token(match.group(), match.group(),index)
                 tokens.append(token)
                 line=line[match.end():]
@@ -99,10 +103,13 @@ def get_next_token(lines,tokens):
 
 if __name__ == "__main__":
     tokens=[]
-    with open("./main/input.txt", "r") as file:
+    with open("input.txt", "r") as file:
         lines=file.readlines()
        
         token = get_next_token(lines,tokens)
+        print("[",end="")
         for i in tokens:
-            print("Token:", i.type, "Value:", i.value)
+            # print("Token:", i.type, "Value:", i.value)
+             print('Token("%s","%s",1),' % (i.type,i.value))
+        print("]",end="")
    
