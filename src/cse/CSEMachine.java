@@ -5,6 +5,7 @@ import cse.ele.EleValue;
 import cse.ele.EleValueOrTuple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * CSE machine
@@ -170,6 +171,7 @@ public class CSEMachine {
      * rule 5
      */
     private void Rule5(EleValue env) {
+        
         EleValueOrTuple value = eleValueOrTuples.pop();
         EleValueOrTuple envS = eleValueOrTuples.pop();
         if (envS instanceof EleValue && envS.isLabel("environment")) {

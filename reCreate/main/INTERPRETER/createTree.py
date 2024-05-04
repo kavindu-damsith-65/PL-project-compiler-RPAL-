@@ -1,4 +1,4 @@
-from .depthOfNode import DepthOfNode
+from .DepthOfNode import DepthOfNode
 
 class CreateTree:
     def nodeFromFile(self,astTexStrings):
@@ -41,7 +41,7 @@ class CreateTree:
                 else:
                     label = data[1:-1].lower()
                     value = None
-                node = DepthOfNode(parent, label, value, currentDepth)
+                node = DepthOfNode(parent, label, currentDepth,value)
             else:
                 node = DepthOfNode(parent, data, currentDepth)
 

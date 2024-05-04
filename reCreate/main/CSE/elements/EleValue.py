@@ -1,5 +1,5 @@
 from .EleValueOrTuple import EleValueOrTuple
-from ...INTERPRETER.Node import Node
+from INTERPRETER.Node import Node
  
 class EleValue(EleValueOrTuple):
     def __init__(self, type, value=None):

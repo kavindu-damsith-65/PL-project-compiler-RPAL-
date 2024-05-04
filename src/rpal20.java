@@ -21,11 +21,14 @@ public class rpal20 {
     public static void main(String[] args) throws Exception {
         String fileName = "";
         try {
-            fileName = args[0];
-            if (args.length == 0) {
-                String error = "You shold give the AST file name as a argument...";
-                throw new Exception(error);
-            } else {
+            // fileName = args[0];
+            fileName ="C:\\PROGRAMMING\\compilerDesign\\PL-project-compiler-RPAL-\\src\\conc.1";
+            // if (args.length == 0) {
+            //     String error = "You shold give the AST file name as a argument...";
+            //     throw new Exception(error);
+            // } else {
+
+
                 AST ast = null;
                 Scanner scanner = new Scanner(fileName);
                 Parser parser = new Parser(scanner);
@@ -39,10 +42,14 @@ public class rpal20 {
 
                 Node root = CreateTree.nodeFromFile(lines);
                 ASTtoST.astToSt(root);
+
+                // System.out.println(root.getNumChild());
+
+
                 ArrayList<Stack<EleValue>> controls = ElementParser.generateCS(root);
                 CSEMachine cseMachine = new CSEMachine(controls);
                 cseMachine.evaluateTree();
-            }
+            // }
 
         } catch (ExceptionHandlerOfAST exception) {
             System.out.println("Error occurred while standardizing ast:\n" + exception.getMessage());

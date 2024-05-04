@@ -1,35 +1,35 @@
 from collections import deque
 
 from .elements.EleValue import EleValue
-from ..INTERPRETER.Node import Node
+from INTERPRETER.Node import Node
 
 
 class ElementParser:
-    @staticmethod
-    def generateCs(root):
-        controls = []
-        control = deque()
-        controls.append(control)
-        ElementParser.generateCS(root, controls, control)
-        return controls
-
-    @staticmethod
-    def generateCS(node, controls, currentControl):
-        if node.isLabel("lambda"):
-            ElementParser.generateCsLambda(node, controls, currentControl)
-        elif node.isLabel("->"):
-            ElementParser.generateCsIf(node, controls, currentControl)
-        elif node.isLabel("tau"):
-            ElementParser.generateCsTau(node, controls, currentControl)
+    
+    def generateCs(self,node,controls=None, currentControl=None):
+        if not controls:
+            controls = []
+            control = deque()
+            controls.append(control)
+            self.generateCs(node, controls, control)
+            return controls
+        
         else:
-            # Add this node and recurse on children
-            currentControl.append(EleValue(node))
+            if node.isLabel("lambda"):
+                self.generateCsLambda(node, controls, currentControl)
+            elif node.isLabel("->"):
+                self.generateCsIf(node, controls, currentControl)
+            elif node.isLabel("tau"):
+                self.generateCsTau(node, controls, currentControl)
+            else:
+                # Add this node and recurse on children
+                currentControl.append(EleValue(node))
 
-            node.forEachChild(lambda child :ElementParser.generateCS(child, controls, currentControl) )
+                node.forEachChild(lambda child :self.generateCs(child, controls, currentControl) )
+    
           
-
-    @staticmethod
-    def generateCsLambda(node, controls, currentControl):
+    
+    def generateCsLambda(self,node, controls, currentControl):
         # Get right and left children
         newIndex = len(controls)
         leftChild = node.getChild(0)
@@ -51,10 +51,10 @@ class ElementParser:
         controls.append(newControl)
 
         # Traverse in new structure
-        ElementParser.generateCS(rightChild, controls, newControl)
+        self.generateCs(rightChild, controls, newControl)
 
-    @staticmethod
-    def generateCsIf(node, controls, currentControl):
+    
+    def generateCsIf(self,node, controls, currentControl):
         conditionNode = node.getChild(0)
         thenNode = node.getChild(1)
         elseNode = node.getChild(2)
@@ -64,21 +64,21 @@ class ElementParser:
         currentControl.append(thenElem)
         thenControl = deque()
         controls.append(thenControl)
-        ElementParser.generateCS(thenNode, controls, thenControl)
+        self.generateCs(thenNode, controls, thenControl)
 
         elseIndex = len(controls)
         elseElem = EleValue("delta", str(elseIndex))
         currentControl.append(elseElem)
         elseControl = deque()
         controls.append(elseControl)
-        ElementParser.generateCS(elseNode, controls, elseControl)
+        self.generateCs(elseNode, controls, elseControl)
 
         currentControl.append(EleValue("beta"))
-        ElementParser.generateCS(conditionNode, controls, currentControl)
+        self.generateCs(conditionNode, controls, currentControl)
 
-    @staticmethod
-    def generateCsTau(node, controls, currentControl):
+    
+    def generateCsTau(self,node, controls, currentControl):
         currentControl.append(EleValue("tau", str(node.getNumChild())))
-        node.forEachChild(lambda child :ElementParser.generateCS(child, controls, currentControl) )
+        node.forEachChild(lambda child :self.generateCs(child, controls, currentControl) )
 
        
