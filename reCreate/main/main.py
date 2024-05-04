@@ -10,39 +10,51 @@ from INTERPRETER.ASTtoST import AstToSt
 import sys
 
 if __name__ == "__main__":
-    fileName=sys.argv[1:]
-    tokens=[]
-    # with open(fileName[0], "r") as file:
-    with open("defns.1", "r") as file:
+    astVisible=False
+    
+    params=sys.argv[1:]
+    if len(params)==1:
+        path=params[0]
+    elif len(params) ==2 and params[0]=="--ast":
+        astVisible=True
+        path=params[1]
 
-        lines=file.readlines()
-        tokens=get_next_token(lines,tokens)
+        
+    tokens=[]
+    with open(path, "r") as file:
+    # with open("defns.1", "r") as file:
+       
         # print("[",end="")
         # for i in tokens:
         #     # print("Token:", i.type, "Value:", i.value)
         #      print('Token("%s","%s",1),' % (i.type,i.value))
         # print("]",end="")
-        # try:
-        pasrser = Parser(tokens)
-        ast=pasrser.buildAst()
-        # print(ast.getAST())
-        # try:
+        try:
+            lines=file.readlines()
+            tokens=get_next_token(lines,tokens)
+            pasrser = Parser(tokens)
+            ast=pasrser.buildAst()
 
-        text =ast.getAST().split("\n")
-        root=CreateTree().nodeFromFile(text)
-        AstToSt().astToSt(root)
-        controls=ElementParser().generateCs(root)
-        cseMachine=CSEMachine(controls)
-        cseMachine.evaluateTree()
+            if astVisible:    
+               print(ast.getAST())
+               print("")
+            
 
-        # input()
-        # except CustomException as e:
-        #     print("Custom Exception:", e.message)
-        # except ExceptionHandlerOfAST as e:
-        #     print("Custom Exception:", e.message)
-        # except ExceptionHandlerOfAST as e:
-        #     print("Custom Exception:", e.message)
-        # except RuntimeError as e:
-        #     print("Custom Exception:", e.message)
+            text =ast.getAST().split("\n")
+            root=CreateTree().nodeFromFile(text)
+            AstToSt().astToSt(root)
+            controls=ElementParser().generateCs(root)
+            cseMachine=CSEMachine(controls)
+            cseMachine.evaluateTree()
+
+       
+        except CustomException as e:
+            print("Custom Exception:", e.message)
+        except ExceptionHandlerOfAST as e:
+            print("Custom Exception:", e.message)
+        except ExceptionHandlerOfCSE as e:
+            print("Custom Exception:", e.message)
+        except RuntimeError as e:
+            print("Custom Exception:", e.message)
         
     
