@@ -3,26 +3,7 @@ from AST.ASTNode  import ASTNode
 from AST.ASTNode  import nodeTypes
 
 from AST.AST import AST
-
-
-
-class Token:
-    def __init__(self, type, value, line):
-        self.type = type
-        self.value = value
-        self.tokenLine = line
-
-    def getType(self):
-        return self.type
-
-    def getValue(self):
-        return self.value
-
-    def getLineNumber(self):
-        return self.tokenLine
-
-
-
+from lexicon import Token
 
 
 
@@ -117,10 +98,10 @@ class Parser:
             while self.isCurrentTokenType("IDENTIFIER") or self.isCurrentTokenType("("):
                 self.procVB()
                 treesToPop += 1
-            # if treesToPop == 0:
-            #     raise CustomException("E: at least one 'Vb' expected")
-            # if self.isCurrentToken("OPERATOR", "."):
-            #     raise CustomException("E: '.' expected")
+            if treesToPop == 0:
+                raise CustomException("E: at least one 'Vb' expected")
+            if self.isCurrentToken("OPERATOR", "."):
+                raise CustomException("E: '.' expected")
             self.getNextToken()
             self.procE()
             self.createArrayAstNode(nodeTypes["LAMBDA"], treesToPop+1)
@@ -380,9 +361,8 @@ class Parser:
         elif self.isCurrentTokenType("("):
             self.getNextToken()
             self.procE()
-            # if not self.isCurrentTokenType(")"):
-            #     # print("OK",self.currToken.getType(),self.currToken.getValue(),self.currToken.getLineNumber())
-            #     raise CustomException("RN: ')' expected")
+            if not self.isCurrentTokenType(")"):
+                raise CustomException("RN: ')' expected")
         elif self.isCurrentToken("RESERVED", "dummy"):
             self.createTerminalASTNode(nodeTypes["DUMMY"], "dummy")
 
@@ -510,52 +490,3 @@ class Parser:
                 self.createArrayAstNode(nodeTypes["COMMA"], treesToPop + 1) 
 
 
-
-
-
-try:
-    pasrser = Parser(
-        [Token("RESERVED","let",1),
-        Token("IDENTIFIER","Conc",1),
-        Token("IDENTIFIER","x",1),
-        Token("IDENTIFIER","y",1),
-        Token("OPERATOR","=",1),
-        Token("IDENTIFIER","Conc",1),
-        Token("IDENTIFIER","x",1),
-        Token("IDENTIFIER","y",1),
-        Token("RESERVED","in",1),
-        Token("RESERVED","let",1),
-        Token("IDENTIFIER","S",1),
-        Token("OPERATOR","=",1),
-        Token("STRING","'CIS'",1),
-        Token("RESERVED","and",1),
-        Token("IDENTIFIER","T",1),
-        Token("OPERATOR","=",1),
-        Token("STRING","'104B'",1),
-        Token("RESERVED","and",1),
-        Token("IDENTIFIER","Mark",1),
-        Token("OPERATOR","=",1),
-        Token("IDENTIFIER","Conc",1),
-        Token("STRING","'CIS'",1),
-        Token("RESERVED","in",1),
-        Token("IDENTIFIER","Print",1),
-        Token("(","(",1),
-        Token("IDENTIFIER","Conc",1),
-        Token("IDENTIFIER","S",1),
-        Token("IDENTIFIER","T",1),
-        Token(",",",",1),
-        Token("IDENTIFIER","S",1),
-        Token("OPERATOR","@",1),
-        Token("IDENTIFIER","Conc",1),
-        Token("IDENTIFIER","T",1),
-        Token(",",",",1),
-        Token("IDENTIFIER","Mark",1),
-        Token("IDENTIFIER","T",1),
-        Token(")",")",1)
-        ]
-    )
-    ast=pasrser.buildAst()
-    print(ast.getAST())
-    
-except CustomException as e:
-    print("Custom Exception:", e.message)

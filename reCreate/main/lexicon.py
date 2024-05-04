@@ -101,15 +101,5 @@ def get_next_token(lines,tokens):
         
     return tokens
 
-if __name__ == "__main__":
-    tokens=[]
-    with open("input.txt", "r") as file:
-        lines=file.readlines()
-       
-        token = get_next_token(lines,tokens)
-        print("[",end="")
-        for i in tokens:
-            # print("Token:", i.type, "Value:", i.value)
-             print('Token("%s","%s",1),' % (i.type,i.value))
-        print("]",end="")
+
    

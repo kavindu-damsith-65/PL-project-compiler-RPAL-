@@ -36,7 +36,7 @@ class ASTNode:
 
 nodeTypes = {
     "IDENTIFIER": ["IDENTIFIER", "<ID:%s>"],
-    "STRING": ["STRING", "<STR:'%s'>"],
+    "STRING": ["STRING", "<STR:%s>"],
     "INTEGER": ["INTEGER", "<INT:%s>"],
     "LET": ["LET", "let"],
     "LAMBDA": ["LAMBDA", "lambda"],
@@ -78,19 +78,3 @@ nodeTypes = {
     "ETA": ["ETA", ""],
     "TUPLE": ["TUPLE", ""]
 }
-
-      
-
-# nodeTypes = {
-#     "IDENTIFIER": ["IDENTIFIER"],
-#     "INTEGER": ["INTEGER"],
-#     "STRING": ["STRING"],
-#     "LAMBDA": ["LAMBDA"],
-#     "WHERE": ["WHERE"],
-#     "TAU": ["TAU"],
-#     "AUG": ["AUG"],
-#     "CONDITIONAL": ["CONDITIONAL"],
-#     "OR": ["OR"],
-#     "AND": ["AND"],
-#     "NOT": ["NOT"],
-# }
