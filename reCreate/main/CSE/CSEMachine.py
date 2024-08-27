@@ -33,9 +33,13 @@ class CSEMachine:
         return self.environments[self.currentEnvironmentIndex()]
 
     def evaluateTree(self):
+        counter=0
+      
         while self.eleValues:
+            counter+=1
+            # print(counter)
             currentElement = self.eleValues.pop()
-
+            # print(currentElement.getLabel())
             if currentElement.isLabel("gamma"):
                 firstElem = self.eleValueOrTuples.pop()
                 secondElem = self.eleValueOrTuples.pop()
@@ -53,6 +57,7 @@ class CSEMachine:
                 elif firstElem.isLabel("tau"):
                     self.rule10(firstElem, secondElem)
                 else:
+                   
                     self.rule3(firstElem, secondElem)
             elif currentElement.isLabel("delta"):
                 controlIndex = int(currentElement.getValue())
@@ -69,7 +74,7 @@ class CSEMachine:
                 self.rule9(currentElement)
             elif not self.rule6_7(currentElement):
                 self.eleValueOrTuples.append(currentElement)
-
+        
     def extractDelta(self, controlIndex):
         control = self.CS[controlIndex]
         for controlElem in control:
@@ -90,6 +95,7 @@ class CSEMachine:
         self.eleValueOrTuples.append(newLambda)
 
     def rule3(self, rator, rand):
+        
         result = self.operationHandler.apply(rator, rand)
         self.eleValueOrTuples.append(result)
 

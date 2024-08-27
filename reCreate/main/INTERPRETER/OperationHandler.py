@@ -8,6 +8,7 @@ class OperationHandler:
     def extract(self, operation, operand):
         if isinstance(operand, EleValue) and operand.isLabel("int"):
             index = int(operand.getValue())
+            # print(len( operation.getValue()),index)
             return operation.getValue()[index - 1]
         raise RuntimeError("Index of the tuple must be integer.")
 
@@ -97,6 +98,7 @@ class OperationHandler:
         elif operatorLabel == "not":
             return self.notOperator(operand)
         elif operatorLabel == "tuple":
+           
             return self.extract(operation, operand)
         else:
             raise ExceptionHandlerOfCSE("this is a unknown variable for cse machine: " + operation)

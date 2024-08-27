@@ -1,7 +1,7 @@
 from exception import CustomException
 from AST.ASTNode  import ASTNode
 from AST.ASTNode  import nodeTypes
-
+from collections import deque 
 from AST.AST import AST
 from lexicon import Token
 
@@ -11,7 +11,7 @@ class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.currToken = None
-        self.stack = []
+        self.stack = deque()
 
     def getNextToken(self):
         if len(self.tokens)>0:
@@ -41,6 +41,7 @@ class Parser:
         #     raise CustomException("Expected EOF.")
 
     def createTerminalASTNode(self, type, value):
+       
         node = ASTNode()
         node.setType(type)
         node.setValue(value)
@@ -48,14 +49,18 @@ class Parser:
         self.stack.append(node)
 
     def createArrayAstNode(self, type, ariness):
+      
         node = ASTNode()
         node.setType(type)
+        # print(ariness)
         while ariness > 0:
+           
             child = self.stack.pop()
             if node.getChild() != None:
                 child.setSibling(node.getChild())
             node.setChild(child)
             node.setSourceLineNumber = child.getSourceLineNumber()
+           
             ariness -= 1
         self.stack.append(node)
 
@@ -67,6 +72,7 @@ class Parser:
         return True
 
     def isCurrentTokenType(self, type):
+        
         if self.currToken == None:
             return False
         if self.currToken.getType() == type:
@@ -85,8 +91,10 @@ class Parser:
             self.getNextToken()
             
             self.procD()
-            # print("OK",self.currToken.getType(),self.currToken.getValue(),self.currToken.getLineNumber())
+           
+            
             if not self.isCurrentToken("RESERVED", "in"):
+                
                 raise CustomException("E:  'in' expected")
             self.getNextToken()
             self.procE()
@@ -100,7 +108,7 @@ class Parser:
                 treesToPop += 1
             if treesToPop == 0:
                 raise CustomException("E: at least one 'Vb' expected")
-            if self.isCurrentToken("OPERATOR", "."):
+            if not self.isCurrentToken("OPERATOR", "."):
                 raise CustomException("E: '.' expected")
             self.getNextToken()
             self.procE()
@@ -114,6 +122,7 @@ class Parser:
 #  *    -> T;
 
     def procEW(self):
+  
         self.procT()
         if self.isCurrentToken("RESERVED", "where"):
             self.getNextToken()
@@ -125,7 +134,7 @@ class Parser:
 # *   -> Ta;
 
     def procT(self):
-        
+      
         self.procTA()
         treesToPop = 0
         
@@ -135,7 +144,7 @@ class Parser:
             treesToPop += 1
         
         if treesToPop > 0:
-            # print(treesToPop,self.currToken.getType(),self.currToken.getValue(),self.currToken.getLineNumber())
+           
             self.createArrayAstNode(nodeTypes["TAU"], treesToPop+1)
 
 
@@ -143,8 +152,9 @@ class Parser:
 #    *    -> Tc;
 
     def procTA(self):
+       
         self.procTC()
-        # print("OK",self.currToken.getType(),self.currToken.getValue(),self.currToken.getLineNumber())
+     
         while self.isCurrentToken("RESERVED", "aug"):
             self.getNextToken()
             self.procTC()
@@ -155,14 +165,17 @@ class Parser:
 #    *    -> B;
 
     def procTC(self):
+      
         self.procB()
         if self.isCurrentToken("OPERATOR", "->"):
             self.getNextToken()
             self.procTC()
+            
             if not self.isCurrentToken("OPERATOR", "|"):
                 raise CustomException("TC: '|' expected")
             self.getNextToken()
-            self.procTC
+            
+            self.procTC()
             self.createArrayAstNode(nodeTypes["CONDITIONAL"], 3)
 
  # Boolean Expressions
@@ -171,6 +184,7 @@ class Parser:
 #    *   -> Bt;
 
     def procB(self):
+      
         self.procBT()
         while self.isCurrentToken("RESERVED", "or"):
             self.getNextToken()
@@ -182,6 +196,7 @@ class Parser:
 # *    -> Bs;
 
     def procBT(self):
+    
         self.procBS()
         while self.isCurrentToken("OPERATOR", "&"):
             self.getNextToken()
@@ -193,6 +208,7 @@ class Parser:
 # *    -> Bp;
 
     def procBS(self):
+   
         if self.isCurrentToken("RESERVED", "not"):
             self.getNextToken()
             self.procBP()
@@ -212,6 +228,7 @@ class Parser:
 # check aain
 
     def procBP(self):
+      
         self.procA()
         
         if self.isCurrentToken("RESERVED", "gr") or self.isCurrentToken("OPERATOR", ">"):
@@ -248,7 +265,7 @@ class Parser:
 #    *   -> At;
 
     def procA(self):
-        
+       
         if self.isCurrentToken("OPERATOR", "+"):
             self.getNextToken()
             self.procAT()
@@ -279,7 +296,7 @@ class Parser:
 
 
     def procAT(self):
-        
+       
         self.procAF()
         mult = True
         while self.isCurrentToken("OPERATOR", "*") or self.isCurrentToken("OPERATOR", "/"):
@@ -299,6 +316,7 @@ class Parser:
 #    *    -> Ap;
 
     def procAF(self):
+     
         self.procAP()
         
         if self.isCurrentToken("OPERATOR", "**"):
@@ -325,9 +343,12 @@ class Parser:
 # * R -> R Rn => 'gamma'
 # *   -> Rn;
     def procR(self):
-        
+       
         self.procRN() 
         self.getNextToken()
+        
+
+        
         while (self.isCurrentTokenType("INTEGER") or
             self.isCurrentTokenType("STRING") or
             self.isCurrentTokenType("IDENTIFIER") or
@@ -335,6 +356,7 @@ class Parser:
             self.isCurrentToken("RESERVED", "false") or
             self.isCurrentToken("RESERVED", "nil") or
             self.isCurrentToken("RESERVED", "dummy") or self.isCurrentTokenType("(")): 
+            
             self.procRN()
             
             self.createArrayAstNode(nodeTypes['GAMMA'], 2)
@@ -350,6 +372,7 @@ class Parser:
 #    *    -> '(' E ')'
 #    *    -> 'dummy' => 'dummy'
     def procRN(self):
+      
         if self.isCurrentTokenType("IDENTIFIER") or  self.isCurrentTokenType("INTEGER") or self.isCurrentTokenType("STRING"):
             pass
         elif self.isCurrentToken("RESERVED", "true"):
@@ -360,6 +383,7 @@ class Parser:
             self.createTerminalASTNode(nodeTypes["NIL"], "nil")
         elif self.isCurrentTokenType("("):
             self.getNextToken()
+            
             self.procE()
             if not self.isCurrentTokenType(")"):
                 raise CustomException("RN: ')' expected")
@@ -375,6 +399,7 @@ class Parser:
 # * D -> Da 'within' D => 'within'
 # *   -> Da;
     def procD(self):
+      
         self.procDA()
         if self.isCurrentToken("RESERVED","within"):
             self.getNextToken()
@@ -385,6 +410,7 @@ class Parser:
 #  * Da -> Dr ('and' Dr)+ => 'and'
 #  *    -> Dr;
     def procDA(self):
+       
         self.procDR()
         treesToPop=0
         while self.isCurrentToken("RESERVED","and"):
@@ -398,6 +424,7 @@ class Parser:
 # * Dr -> 'rec' Db => 'rec'
 # * -> Db;
     def procDR(self):
+       
         if self.isCurrentToken("RESERVED","rec") :
             self.getNextToken()
             self.procDB()
@@ -410,6 +437,7 @@ class Parser:
 # *    -> '(' D ')';   
 
     def procDB(self):
+       
         if self.isCurrentTokenType("("):
             self.procD()
             self.getNextToken()
@@ -448,7 +476,8 @@ class Parser:
 
                     self.getNextToken()
                     self.procE()
-
+                   
+                   
                     self.createArrayAstNode(nodeTypes["FCNFORM"], treesToPop + 2)
 
 
@@ -461,6 +490,7 @@ class Parser:
 #    *    -> '(' Vl ')'
 #    *    -> '(' ')' => '()'   
     def procVB(self):
+    
         if self.isCurrentTokenType("IDENTIFIER"):
             self.getNextToken()
         elif self.isCurrentTokenType("("):
@@ -471,22 +501,28 @@ class Parser:
             else:
                 self.procVL()
                 if not self.isCurrentTokenType(")"):
+                    
                     raise CustomException("VB: ')' expected")
                 self.getNextToken()
 
     def procVL(self):
+       
         if not self.isCurrentTokenType("IDENTIFIER"):
             raise CustomException("VL: Identifier expected")
         else:
             self.getNextToken()
+            
             treesToPop = 0
-            while self.isCurrentToken("OPERATOR", ","):
+            while self.isCurrentToken(",", ","):
+               
                 self.getNextToken()
                 if not self.isCurrentTokenType("IDENTIFIER"):
                     raise CustomException("VL: Identifier expected")
                 self.getNextToken()
                 treesToPop += 1
             if treesToPop > 0:
+                
                 self.createArrayAstNode(nodeTypes["COMMA"], treesToPop + 1) 
+            
 
 

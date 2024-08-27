@@ -22,19 +22,22 @@ if __name__ == "__main__":
         
     tokens=[]
     with open(path, "r") as file:
-    # with open("defns.1", "r") as file:
+    # with open("add", "r") as file:
        
         # print("[",end="")
         # for i in tokens:
         #     # print("Token:", i.type, "Value:", i.value)
         #      print('Token("%s","%s",1),' % (i.type,i.value))
         # print("]",end="")
-        try:
+        # try:
             lines=file.readlines()
+            
             tokens=get_next_token(lines,tokens)
             pasrser = Parser(tokens)
+            # print(pasrser)
             ast=pasrser.buildAst()
 
+            # print(ast.getAST())
             if astVisible:    
                print(ast.getAST())
                print("")
@@ -48,13 +51,13 @@ if __name__ == "__main__":
             cseMachine.evaluateTree()
 
        
-        except CustomException as e:
-            print("Custom Exception:", e.message)
-        except ExceptionHandlerOfAST as e:
-            print("Custom Exception:", e.message)
-        except ExceptionHandlerOfCSE as e:
-            print("Custom Exception:", e.message)
-        except RuntimeError as e:
-            print("Custom Exception:", e.message)
+        # except CustomException as e:
+        #     print("Custom Exception:", e.message)
+        # except ExceptionHandlerOfAST as e:
+        #     print("ExceptionHandlerOfAST:", e.message)
+        # except ExceptionHandlerOfCSE as e:
+        #     print("ExceptionHandlerOfCSE:", e.message)
+        # except RuntimeError as e:
+        #     print("RuntimeError")
         
     
